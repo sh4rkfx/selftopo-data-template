@@ -39,6 +39,9 @@ concurrency:
 env:
   # Public repository with the selftopo code; set the repository variable to use a fork
   CODE_REPO: ${{ vars.SELFTOPO_CODE_REPO || vars.HEALTHSYNC_CODE_REPO || 'sh4rkfx/selftopo' }}
+  # Version of the code: v1 follows every 1.x release; set SELFTOPO_CODE_REF to main for the
+  # development state or to an exact tag such as v1.0.0 to stay on it
+  CODE_REF: ${{ vars.SELFTOPO_CODE_REF || 'v1' }}
 
 jobs:
   sync:
@@ -51,10 +54,22 @@ jobs:
       YAZIO_TOKEN_DIR: .yazio-tokens
       SELFTOPO_DATA_DIR: data # the checkout of this repository, see below
     steps:
+      # A fork or a new release may not have the version tag yet; then main is used
+      - name: Choose the code version
+        id: code
+        run: |
+          ref="$CODE_REF"
+          if ! git ls-remote --exit-code "https://github.com/${CODE_REPO}.git" "refs/tags/${ref}" "refs/heads/${ref}" > /dev/null; then
+            echo "::warning::${CODE_REPO} has no ${ref}; using main"
+            ref=main
+          fi
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+
       - name: Check out the selftopo code
         uses: actions/checkout@v4
         with:
           repository: ${{ env.CODE_REPO }}
+          ref: ${{ steps.code.outputs.ref }}
           persist-credentials: false
 
       # Always the current tip of main. Without `ref`, a delayed scheduled run can start from an

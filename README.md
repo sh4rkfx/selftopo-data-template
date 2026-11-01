@@ -5,7 +5,7 @@ metrics and activities, Hevy sets and the relationship analysis.
 
 > [!TIP]
 > Looking at the template? Click **Use this template → Create a new repository** and choose
-> **Private**, or let the dashboard's setup guide (*Eigene Daten einrichten*) prefill everything.
+> **Private**, or let the dashboard's setup guide (*Set up your own data*, gear icon → *Setup*) prefill everything.
 
 > [!IMPORTANT]
 > Keep this repository **private**. Every file here is health data, and whatever is committed
@@ -24,10 +24,12 @@ metrics and activities, Hevy sets and the relationship analysis.
 | `hevy_exercises.csv` | Muscle groups of the exercises used |
 | `nutrition_daily.csv` | Optional, from YAZIO: calories, protein, carbohydrates, fat and water per logged day |
 | `insights.json` | Result of `python -m selftopo analyze` |
-| `settings.json` | Your settings: time zone, step goal, main lifts, grip-strength exercises. Edit it in the dashboard under *Daten → Einstellungen* |
+| `settings.json` | Your settings: time zone, step goal, main lifts, grip-strength exercises. Edit it in the dashboard under gear icon → *General* |
 
 The workflow in `.github/workflows/sync.yml` runs every morning. It checks out the public
-selftopo code, fetches the last 30 days and commits changed files.
+selftopo code at the tag `v1` (the newest 1.x release), fetches the last 30 days and commits
+changed files. Repository variables change that: `SELFTOPO_CODE_REF` (`main` for the development
+state, or an exact tag such as `v1.0.0`) and `SELFTOPO_CODE_REPO` (your fork).
 
 *Run workflow* takes optional inputs: `days`, `source` (for example `climbs` with `days` 2000 to
 load older bouldering sessions without touching the other sources) and a date for a raw dump of
